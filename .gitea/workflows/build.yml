@@ -1,0 +1,62 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+    tags: ["*"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: linux
+            runs-on: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            binary: ccsm
+            archive: ccsm-linux-amd64.tar.gz
+          - os: macos
+            runs-on: macos-latest
+            target: x86_64-apple-darwin
+            binary: ccsm
+            archive: ccsm-darwin-amd64.tar.gz
+          - os: windows
+            runs-on: windows-latest
+            target: x86_64-pc-windows-msvc
+            binary: ccsm.exe
+            archive: ccsm-windows-amd64.zip
+
+    runs-on: ${{ matrix.runs-on }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: https://gitea.com/actions/rust-toolchain@v1
+        with:
+          toolchain: stable
+          target: ${{ matrix.target }}
+
+      - name: Build
+        run: cargo build --release --target ${{ matrix.target }}
+
+      - name: Package (linux / macos)
+        if: matrix.os != 'windows'
+        run: |
+          cd target/${{ matrix.target }}/release
+          tar czf ${{ matrix.archive }} ${{ matrix.binary }}
+
+      - name: Package (windows)
+        if: matrix.os == 'windows'
+        run: |
+          cd target\${{ matrix.target }}\release
+          7z a ${{ matrix.archive }} ${{ matrix.binary }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ccsm-${{ matrix.os }}-amd64
+          path: target/${{ matrix.target }}/release/${{ matrix.archive }}
