@@ -1,12 +1,18 @@
 # Changelog
 
+## v0.3.0
+
+### Added
+
+- **Detailed `--version` output** — shows version, commit SHA, project name, and attribution (`by OnixByte`); version can be injected at build time via `CCSM_VERSION` env var
+- **Marketplace creation guide** — README now documents how to create and publish a skill marketplace, including the `skills.json` format, skill entry fields, monorepo `path` support, and skill repository structure
+
 ## v0.2.0
 
 ### Added
 
 - **Monorepo skill support** — skills can now live in subdirectories of a single repository via the `path` field in `skills.json`
 - **Release-triggered CI** — workflow runs on `release: published` and uploads built artifacts directly to the release
-- **Detailed `--version` output** — shows version, commit SHA, project name, and attribution; version can be injected at build time via `CCSM_VERSION` env var
 - **Project documentation** — README, CONTRIBUTING, and LICENCE (MIT) files
 
 ### Fixed
