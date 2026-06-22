@@ -2,9 +2,10 @@ use clap::{Args, Parser, Subcommand};
 
 const VERSION_TEXT: &str = concat!(
     env!("CCSM_VERSION"),
+    " -- Claude Code Skill Manager",
     " -- ",
     env!("GIT_COMMIT_SHORT"),
-    " -- Claude Code Skill Manager\nby OnixByte"
+    "\nby OnixByte"
 );
 
 #[derive(Parser)]
