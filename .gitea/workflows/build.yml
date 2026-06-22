@@ -65,7 +65,7 @@ jobs:
           fi
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.archive }}
           path: target/${{ matrix.target }}/release/${{ matrix.archive }}
