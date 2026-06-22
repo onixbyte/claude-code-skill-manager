@@ -61,8 +61,10 @@ jobs:
             tar czf "${{ matrix.archive }}" "${{ matrix.binary }}"
           fi
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ matrix.archive }}
-          path: target/${{ matrix.target }}/release/${{ matrix.archive }}
+      - name: Upload to release
+        run: |
+          curl --fail -X POST \
+            -H "Authorization: Bearer ${{ secrets.GITEA_TOKEN }}" \
+            -H "Content-Type: application/octet-stream" \
+            --data-binary @"target/${{ matrix.target }}/release/${{ matrix.archive }}" \
+            "${{ github.server_url }}/api/v1/repos/${{ github.repository }}/releases/${{ github.event.release.id }}/assets?name=${{ matrix.archive }}"
