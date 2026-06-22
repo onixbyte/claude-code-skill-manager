@@ -32,17 +32,28 @@ jobs:
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
           echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
 
+      - name: Install Rust targets
+        run: |
+          rustup target add ${{ matrix.target }}
+
       - name: Build (Linux)
         if: matrix.target == 'x86_64-unknown-linux-gnu'
-        run: cargo build --release
+        run: cargo build --release --target ${{ matrix.target }}
 
-      - name: Install cross
+      - name: Install Zig
         if: matrix.target != 'x86_64-unknown-linux-gnu'
-        run: cargo install cross --locked
+        run: |
+          curl -L -o zig.tar.xz https://ziglang.org/download/0.13.0/zig-linux-x86_64-0.13.0.tar.xz
+          tar xf zig.tar.xz
+          echo "$PWD/zig-linux-x86_64-0.13.0" >> "$GITHUB_PATH"
 
-      - name: Build with cross
+      - name: Install cargo-zigbuild
         if: matrix.target != 'x86_64-unknown-linux-gnu'
-        run: cross build --release --target ${{ matrix.target }}
+        run: cargo install cargo-zigbuild
+
+      - name: Build with zigbuild
+        if: matrix.target != 'x86_64-unknown-linux-gnu'
+        run: cargo zigbuild --release --target ${{ matrix.target }}
 
       - name: Package
         run: |
