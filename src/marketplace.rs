@@ -19,6 +19,8 @@ pub struct SkillEntry {
     pub repository: String,
     #[serde(default)]
     pub branch: Option<String>,
+    #[serde(default)]
+    pub path: Option<String>,
 }
 
 pub fn add(url: &str, name: Option<&str>) -> Result<MarketplaceEntry, String> {
