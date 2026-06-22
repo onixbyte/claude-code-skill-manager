@@ -38,10 +38,20 @@ pub fn install(
     let branch = entry.branch.as_deref().unwrap_or("main");
     download::download_skill(&entry.repository, branch, &target)?;
 
-    // Deploy to Claude skills directory (copy or link)
+    let deploy_source = match &entry.path {
+        Some(subdir) => {
+            let p = target.join(subdir);
+            if !p.exists() {
+                return Err(format!("Path '{}' not found in skill repository", subdir));
+            }
+            p
+        }
+        None => target.clone(),
+    };
+
     let config = Config::load().map_err(|e| format!("Cannot read config: {e}"))?;
     let deploy_mode = mode.unwrap_or_else(|| config.default_mode.clone());
-    deploy_skill(name, &target, &deploy_mode)?;
+    deploy_skill(name, &deploy_source, &deploy_mode)?;
 
     Ok(Skill {
         name: name.to_string(),
@@ -233,12 +243,16 @@ pub fn update(name: Option<&str>) -> Result<Vec<(String, String)>, String> {
 
                 match download::download_skill(&skill_entry.repository, branch, &old_path) {
                     Ok(()) => {
+                        let deploy_source = match &skill_entry.path {
+                            Some(subdir) => old_path.join(subdir),
+                            None => old_path.clone(),
+                        };
                         // Redeploy if previously deployed
                         if deploy_mode.is_some() || config.default_mode != InstallMode::Copy {
                             let mode = deploy_mode
                                 .clone()
                                 .unwrap_or_else(|| config.default_mode.clone());
-                            match deploy_skill(skill_name, &old_path, &mode) {
+                            match deploy_skill(skill_name, &deploy_source, &mode) {
                                 Ok(()) => results.push((skill_name.clone(), "Updated".to_string())),
                                 Err(e) => results.push((skill_name.clone(), format!("Downloaded but deploy failed: {e}"))),
                             }
