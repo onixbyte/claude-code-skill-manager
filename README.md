@@ -81,6 +81,80 @@ Skills are directories placed under `~/.claude/skills/` that Claude Code reads a
 }
 ```
 
+## Creating a skill marketplace
+
+A marketplace is simply a public Git repository that contains a `skills.json` manifest at its root. CCSM reads this file to discover what skills are available.
+
+### Repository structure
+
+```
+your-marketplace-repo/
+  skills.json        ← manifest (required)
+  README.md          ← optional landing page
+```
+
+### skills.json format
+
+```json
+{
+  "name": "My Marketplace",
+  "version": "1.0.0",
+  "skills": [
+    {
+      "name": "my-skill",
+      "description": "A short description shown in search results",
+      "repository": "https://github.com/user/skill-repo",
+      "branch": "main"
+    },
+    {
+      "name": "another-skill",
+      "description": "A skill that lives in a monorepo subdirectory",
+      "repository": "https://github.com/user/monorepo",
+      "branch": "main",
+      "path": "skills/another-skill"
+    }
+  ]
+}
+```
+
+| Field | Required | Description |
+|---|---|---|
+| `name` | Yes | Marketplace display name |
+| `version` | No | Arbitrary version string for your own tracking |
+| `skills` | No | Array of skill entries (defaults to `[]`) |
+
+**Skill entry fields:**
+
+| Field | Required | Description |
+|---|---|---|
+| `name` | Yes | Unique skill identifier (used with `ccsm install <name>`) |
+| `description` | Yes | One-line summary shown in `ccsm search` output |
+| `repository` | Yes | Public Git repository URL for the skill |
+| `branch` | No | Git branch to install from (defaults to `main` or `master`, auto-detected by the marketplace host) |
+| `path` | No | Subdirectory within the repository where the skill files live — use for monorepos hosting multiple skills |
+
+### What goes in a skill repository
+
+Each skill repository (the one referenced by `repository`) is a standard Claude Code skill directory. At minimum it should contain one of:
+
+- `SKILL.md` — the skill manifest (preferred)
+- `CLAUDE.md` — alternative manifest filename
+- Supporting files referenced by the manifest (scripts, templates, etc.)
+
+See the [Claude Code skills documentation](https://docs.anthropic.com/en/docs/claude-code/skills) for details on writing skill manifests.
+
+### Publishing your marketplace
+
+1. Create a public Git repository with a `skills.json` following the format above.
+2. Push it — make sure `skills.json` is at the repository root.
+3. Anyone can register it with:
+
+```bash
+ccsm marketplace add https://github.com/your-username/your-marketplace
+```
+
+CCSM fetches `skills.json` from the raw `main` or `master` branch automatically, so both of those branch names work out of the box.
+
 ## Deploy modes
 
 - **Copy** (default): Skill files are physically copied to `~/.claude/skills/<name>/`.
