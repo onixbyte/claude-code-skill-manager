@@ -7,14 +7,14 @@ A CLI tool for discovering, installing, and managing [Claude Code](https://claud
 ### From source
 
 ```bash
-git clone https://onixbyte.dev/onixbyte/claude-code-skill-manager.git
+git clone https://github.com/onixbyte/claude-code-skill-manager.git
 cd claude-code-skill-manager
 cargo install --path .
 ```
 
 ### Pre-built binaries
 
-Download the latest binary for your platform from the [Releases](https://onixbyte.dev/onixbyte/claude-code-skill-manager/releases) page.
+Download the latest binary for your platform from the [Releases](https://github.com/onixbyte/claude-code-skill-manager/releases) page.
 
 ## Quick start
 
@@ -166,7 +166,7 @@ CCSM fetches `skills.json` from the raw `main` or `master` branch automatically,
 cargo build --release
 ```
 
-Cross-compilation targets: Linux (amd64), macOS (amd64), and Windows (amd64) via `cargo-zigbuild`.
+Release binaries for Linux, macOS, and Windows (amd64) are built natively per platform by GitHub Actions and attached to each GitHub Release.
 
 ## Contributing
 
