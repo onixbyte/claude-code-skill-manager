@@ -1,10 +1,18 @@
 use clap::{Args, Parser, Subcommand};
 
+const VERSION_TEXT: &str = concat!(
+    env!("CCSM_VERSION"),
+    " -- Claude Code Skill Manager",
+    " -- ",
+    env!("GIT_COMMIT_SHORT"),
+    "\nby OnixByte"
+);
+
 #[derive(Parser)]
 #[command(
     name = "ccsm",
     about = "Claude Code Skill Marketplace — discover and install skills from Git marketplaces",
-    version
+    version = VERSION_TEXT,
 )]
 pub struct Cli {
     #[command(subcommand)]
